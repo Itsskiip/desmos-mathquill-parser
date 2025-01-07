@@ -1,0 +1,47 @@
+**Advanced Settings**
+#- (Parantheses show how heavy the option is computationally.)
+\c565656{Dark = OFF} | Light = ON
+
+\next
+
+**Bold**, *italics*, ***bold italics***, `teletype`, ~roman~
+
+\next
+
+The Peaucellier-Lipkin inversor cell is an exact straight line linkage.
+
+\next
+
+Em dashes--which I am using right now as
+a demonstration--are also seldom utilized
+in my opinion.
+
+\next
+
+assignment, large, revarnish
+
+\next
+
+Life's offerings, though often ineffable, 
+affirm the sufficiency of self-crafted 
+efforts, reflecting the affinity of 
+heartfelt affirmations.
+
+\next
+
+**Let's try nesting ~Roman~ and *italics* inside bold**
+
+\next
+
+Arf **Arf *Arf* ***Arf*** ~Arf~ `Arf`**
+
+\next
+
+** ~Arf~ **
+
+\next
+
+This is the first line.
+This is the second line, note how particularly long this line is.
+This is the third line, this is also pretty long.
+This is the final line.
