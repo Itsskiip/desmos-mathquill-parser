@@ -39,3 +39,7 @@ This is the first line.
 This is the second line, note how particularly long this line is.
 This is the third line, this is also pretty long.
 This is the final line.
+
+\next
+
+You can also $escape$ simple formatted text, even if **the $text$ is bold.**

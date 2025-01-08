@@ -34,6 +34,16 @@ class Op:
 
         for arg in self.args:
             arg.apply_config(config)
+    
+    def search(self, target):
+        name = self.__class__.__name__
+        if name == target:
+            return [self]
+        if name in ('Text', 'F', 'Raw'):
+            return []
+        return [res for arg in self.args for res in arg.search(target)]
+        
+        
 def wrap_if_not_block(token):
     cl = token.__class__
     if cl is str:
@@ -106,7 +116,6 @@ class SansSerif(Op):
         return cmd('mathsf', self.args[0].eval())
 
     def apply_config(self, config):
-        print(config['font'])
         arg = self.args[0]
         if 'bold' in config['font']:
             arg = Bold(arg)
@@ -192,8 +201,7 @@ class Concat(Op):
     def eval(self):
         return self.args[0].eval() + self.args[1].eval()
     
-def translated_len(s):
-    return len()
+
 class Paren(Op):
     def eval(self):
         return self.shortest_def.format(self.args[0].eval())
@@ -218,7 +226,7 @@ class Paren(Op):
 
 class Raw(Text):
     def eval(self):
-        return self.args[0]
+        return '$$' + self.args[0] + '$$'
             
 class Lexer:
     def __init__(self):
@@ -266,6 +274,7 @@ class Parser:
         @pg.production('expr : RAW')
         def raw(p):
             return Raw(p[0].value.replace('$', ''))
+        
 
         @pg.production('expr : STRING')
         def text(p):
@@ -335,6 +344,7 @@ class Parser:
         self.parser = pg.build()
     
     def parse(self, l, config = {}, debug = False):
+        import regex as re
         ast = self.parser.parse(l)
         if debug:
             print('\n[Parser]')
@@ -355,4 +365,35 @@ class Parser:
         ast.apply_config(config)
         result = ast.eval()
 
+        depth = 0
+        i = 0
+
+        raw_nodes = ast.search('Raw')
+
+        for m in re.finditer(r'\$\$(.*?)\$\$|\{|\}', result):
+            full = m.captures()[0]
+            if full == '{':
+                depth += 1
+            elif full == '}':
+                depth -=1
+            else:
+                escaped_text = '}' * depth + m.group(1)
+                info = raw_nodes[i].config['font']
+                
+                if 'sans-serif' in info:
+                    escaped_text += r'\mathsf{'
+                if 'teletype' in info:
+                    escaped_text += r'\mathtt{'
+                if 'roman' in info:
+                    escaped_text += r'\mathrm{'
+                if 'italics' in info:
+                    escaped_text += r'\mathit{'
+                if 'bold' in info:
+                    escaped_text += r'\mathbb{'
+                
+                assert escaped_text.count('{') == escaped_text.count('}'), "Escaping equation not supported for this case yet, sorry!"
+
+                result = result.replace(full, escaped_text, 1)
+
+                i += 1
         return result

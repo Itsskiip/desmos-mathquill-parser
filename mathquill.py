@@ -47,6 +47,7 @@ def translate(text):
     if args.debug:
         print('\n[Input]')
         print(text)
+        print(config)
 
     l = lexer.lex(text, args.debug)
     result = parser.parse(l, config, args.debug)
