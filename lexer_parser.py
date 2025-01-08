@@ -2,7 +2,7 @@ import rply
 
 class Op:
     def __init__(self, *args):
-        print('Parsed operation', self.__class__.__name__, args)
+        #print('Parsed operation', self.__class__.__name__, args)
         self.args = list(args)
         self.config = dict()
     
@@ -118,7 +118,6 @@ class SansSerif(Op):
 
 class Roman(Op):
     def eval(self):
-        print(self.config)
         if 'roman' in self.config['font']:
             return self.args[0].eval()
         return cmd('mathrm', self.args[0].eval())
@@ -143,7 +142,7 @@ class MultilineHeader(Op):
         elif self.config['justify'] == 'right':
             return ([arg], cmd('class', 'dcg-expression-bottom', f'\u200F{arg}{{next_line}}'))
         else:
-            return [arg.eval()]
+            return [arg]
         
 class LineJoin(Op):
     def eval(self, first = True):

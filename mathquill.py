@@ -48,9 +48,9 @@ def translate(text):
     print(text)
 
     l = lexer.lex(text, args.debug)
-    if args.debug:
-        print('\n[Output]')
-    print(parser.parse(l, config, args.debug))
+    result = parser.parse(l, config, args.debug)
+    print('\n[Output]')
+    print(result)
 
 if args.interactive:
     buffer = []
