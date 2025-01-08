@@ -68,7 +68,8 @@ with open('reserved_words.txt') as f:
 
 class Text(Op):
     def debug(self, depth=0):
-        return f'\n{'\t'*depth}Text({self.args[0]})'
+        depth_s = '\t'*depth
+        return f'\n{depth_s}Text({self.args[0]})'
     def eval(self):
         text = self.args[0]
         for k, v in replace_map.items():
