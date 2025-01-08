@@ -69,7 +69,7 @@ with open('reserved_words.txt') as f:
 class Text(Op):
     def debug(self, depth=0):
         depth_s = '\t'*depth
-        return f'\n{depth_s}Text({self.args[0]})'
+        return f'\n{depth_s}{self.__class__.__name__}({self.args[0]})'
     def eval(self):
         text = self.args[0]
         for k, v in replace_map.items():
@@ -106,6 +106,7 @@ class SansSerif(Op):
         return cmd('mathsf', self.args[0].eval())
 
     def apply_config(self, config):
+        print(config['font'])
         arg = self.args[0]
         if 'bold' in config['font']:
             arg = Bold(arg)
@@ -197,6 +198,7 @@ class Paren(Op):
     def eval(self):
         return self.shortest_def.format(self.args[0].eval())
     
+    
     def apply_config(self, config):
         super().apply_config(config)
         c = ""
@@ -213,10 +215,15 @@ class Paren(Op):
         else:
             c = f'textcolor{{{self.config['colour']}}}'
         self.shortest_def = '\\' + c + '{{{}}}'
+
+class Raw(Text):
+    def eval(self):
+        return self.args[0]
             
 class Lexer:
     def __init__(self):
         lg = rply.LexerGenerator()
+        lg.add('RAW', r'\$.*?\$')
         lg.add('ROMAN', '~')
         lg.add('TELETYPE', '`')
         lg.add('BOLDITALICS', r'\*\*\*')
@@ -228,7 +235,7 @@ class Lexer:
         lg.add('COLOUR', r'\\c\d{6}')
         lg.add('BREAK', '\n')
         lg.add('F', r'f+')
-        lg.add('STRING', r'[^\\*\n{}`~f]+')
+        lg.add('STRING', r'[^\\*\n{}`~f$]+')
 
         self.lexer = lg.build()
 
@@ -244,7 +251,7 @@ class Lexer:
 class Parser:
     def __init__(self):
         pg = rply.ParserGenerator(
-        ['F', 'ROMAN', 'TELETYPE', 'ITALICS', 'BOLD', 'BOLDITALICS', 'MOD', 'COLOUR', 'OPEN_BR', 'CLOSE_BR', 'BREAK', 'STRING'],
+        ['F', 'RAW', 'ROMAN', 'TELETYPE', 'ITALICS', 'BOLD', 'BOLDITALICS', 'MOD', 'COLOUR', 'OPEN_BR', 'CLOSE_BR', 'BREAK', 'STRING'],
         
         precedence=[
             ('left', ['BREAK']),
@@ -252,8 +259,13 @@ class Parser:
             ('left', ['COLOUR']),
             ('left', ['MOD']),
             ('left', ['OPEN_BR', 'CLOSE_BR', 'BOLD', 'ROMAN', 'TELETYPE', 'ITALICS', 'BOLDITALICS']),
-            ('left', ['CONCAT'])
+            ('left', ['CONCAT']),
+            ('left', ['RAW']),
         ])
+
+        @pg.production('expr : RAW')
+        def raw(p):
+            return Raw(p[0].value.replace('$', ''))
 
         @pg.production('expr : STRING')
         def text(p):
@@ -330,14 +342,16 @@ class Parser:
         if defaults := config.get('defaults'):
             if 'roman' in defaults:
                 ast = Roman(ast)
-            if 'sans-serif' in defaults:
+            elif 'sans-serif' in defaults:
                 ast = SansSerif(ast)
+            config['font'] = set()
+        else:
+            config['font'] = {'italics'}
                 
         if (col := config.get('colour')) != 'black' and col != '#000' and col != '#000000':
             print(col)
             ast = Colour(Text(col), ast)
-            
-        config.update({'font': {'italics'}})
+        
         ast.apply_config(config)
         result = ast.eval()
 
