@@ -337,7 +337,7 @@ class Parser:
         if (col := config.get('colour')[0]) != 'black' and col != '#000' and col != '#000000':
             ast = Colour(Text(col), ast)
             
-        config.update({'font': set()})
+        config.update({'font': {'italics'}})
         ast.apply_config(config)
         result = ast.eval()
 
