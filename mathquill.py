@@ -44,12 +44,15 @@ lexer = Lexer()
 parser = Parser()
 
 def translate(text):
-    print('\n[Input]')
-    print(text)
+    if args.debug:
+        print('\n[Input]')
+        print(text)
 
     l = lexer.lex(text, args.debug)
     result = parser.parse(l, config, args.debug)
-    print('\n[Output]')
+    
+    if args.debug:
+        print('\n[Output]')
     print(result)
 
 if args.interactive:
