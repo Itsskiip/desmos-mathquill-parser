@@ -306,7 +306,7 @@ class Parser:
             
         @pg.production('expr : COLOUR expr')
         def colour(p):
-            return Colour(Text(p[0].value[2:]), p[1])
+            return Colour(Text(p[0].value[1:]), p[1])
             
         @pg.production('expr : expr expr', precedence='CONCAT')
         def concat(p):
@@ -332,8 +332,9 @@ class Parser:
                 ast = Roman(ast)
             if 'sans-serif' in defaults:
                 ast = SansSerif(ast)
-        
-        if (col := config.get('colour')[0]) != 'black' and col != '#000' and col != '#000000':
+                
+        if (col := config.get('colour')) != 'black' and col != '#000' and col != '#000000':
+            print(col)
             ast = Colour(Text(col), ast)
             
         config.update({'font': {'italics'}})

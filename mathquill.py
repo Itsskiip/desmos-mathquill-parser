@@ -36,7 +36,7 @@ else: justify = 'left'
 if args.debug:
     print('Default flags set:', defaults)
 
-colour = '#000' if not args.colour else args.colour
+colour = '#000' if not args.colour else args.colour[0]
 
 config = {'defaults': defaults, 'justify': justify, 'colour': colour}
 
