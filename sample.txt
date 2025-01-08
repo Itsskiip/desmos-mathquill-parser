@@ -1,9 +1,3 @@
-**Advanced Settings**
-#- (Parantheses show how heavy the option is computationally.)
-\c565656{Dark = OFF} | Light = ON
-
-\next
-
 **Bold**, *italics*, ***bold italics***, `teletype`, ~roman~
 
 \next
