@@ -369,7 +369,7 @@ class Parser:
         i = 0
 
         raw_nodes = ast.search('Raw')
-
+        
         for m in re.finditer(r'\$\$(.*?)\$\$|\{|\}', result):
             full = m.captures()[0]
             if full == '{':
@@ -379,20 +379,18 @@ class Parser:
             else:
                 escaped_text = '}' * depth + m.group(1)
                 info = raw_nodes[i].config['font']
-                
-                if 'sans-serif' in info:
-                    escaped_text += r'\mathsf{'
-                if 'teletype' in info:
-                    escaped_text += r'\mathtt{'
-                if 'roman' in info:
-                    escaped_text += r'\mathrm{'
-                if 'italics' in info:
-                    escaped_text += r'\mathit{'
-                if 'bold' in info:
-                    escaped_text += r'\mathbb{'
-                
-                assert escaped_text.count('{') == escaped_text.count('}'), "Escaping equation not supported for this case yet, sorry!"
-
+                if 'italics' not in info or 'sans-serif' in info or 'roman' in info or 'teletype' in info: #Ignore case without fonts applied
+                    if 'sans-serif' in info:
+                        escaped_text += r'\mathsf{'
+                    if 'teletype' in info:
+                        escaped_text += r'\mathtt{'
+                    if 'roman' in info:
+                        escaped_text += r'\mathrm{'
+                    if 'italics' in info:
+                        escaped_text += r'\mathit{'
+                    if 'bold' in info:
+                        escaped_text += r'\mathbb{'
+                    assert escaped_text.count('{') == escaped_text.count('}'), "Escaping equation not supported for this case yet, sorry!"
                 result = result.replace(full, escaped_text, 1)
 
                 i += 1
